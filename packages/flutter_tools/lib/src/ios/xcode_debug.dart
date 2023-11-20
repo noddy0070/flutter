@@ -85,6 +85,16 @@ class XcodeDebug {
           project.xcodeProject.path,
           '--workspace-path',
           project.xcodeWorkspace.path,
+<<<<<<< HEAD
+=======
+          '--project-name',
+          project.hostAppProjectName,
+          if (project.expectedConfigurationBuildDir != null)
+            ...<String>[
+              '--expected-configuration-build-dir',
+              project.expectedConfigurationBuildDir!,
+            ],
+>>>>>>> db7ef5bf9f59442b0e200a90587e8fa5e0c6336a
           '--device-id',
           deviceId,
           '--scheme',
@@ -310,6 +320,10 @@ class XcodeDebug {
           _xcode.xcodeAppPath,
           '-g', // Do not bring the application to the foreground.
           '-j', // Launches the app hidden.
+<<<<<<< HEAD
+=======
+          '-F', // Open "fresh", without restoring windows.
+>>>>>>> db7ef5bf9f59442b0e200a90587e8fa5e0c6336a
           xcodeWorkspace.path
         ],
         throwOnError: true,
@@ -396,6 +410,10 @@ class XcodeDebug {
 
     return XcodeDebugProject(
       scheme: 'Runner',
+<<<<<<< HEAD
+=======
+      hostAppProjectName: 'Runner',
+>>>>>>> db7ef5bf9f59442b0e200a90587e8fa5e0c6336a
       xcodeProject: tempXcodeProject.childDirectory('Runner.xcodeproj'),
       xcodeWorkspace: tempXcodeProject.childDirectory('Runner.xcworkspace'),
       isTemporaryProject: true,
@@ -470,6 +488,11 @@ class XcodeDebugProject {
     required this.scheme,
     required this.xcodeWorkspace,
     required this.xcodeProject,
+<<<<<<< HEAD
+=======
+    required this.hostAppProjectName,
+    this.expectedConfigurationBuildDir,
+>>>>>>> db7ef5bf9f59442b0e200a90587e8fa5e0c6336a
     this.isTemporaryProject = false,
     this.verboseLogging = false,
   });
@@ -477,6 +500,11 @@ class XcodeDebugProject {
   final String scheme;
   final Directory xcodeWorkspace;
   final Directory xcodeProject;
+<<<<<<< HEAD
+=======
+  final String hostAppProjectName;
+  final String? expectedConfigurationBuildDir;
+>>>>>>> db7ef5bf9f59442b0e200a90587e8fa5e0c6336a
   final bool isTemporaryProject;
 
   /// When [verboseLogging] is true, the xcode_debug.js script will log

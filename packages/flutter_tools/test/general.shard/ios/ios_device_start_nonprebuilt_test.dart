@@ -472,6 +472,10 @@ void main() {
               scheme: 'Runner',
               xcodeWorkspace: fileSystem.directory('/ios/Runner.xcworkspace'),
               xcodeProject: fileSystem.directory('/ios/Runner.xcodeproj'),
+<<<<<<< HEAD
+=======
+              hostAppProjectName: 'Runner',
+>>>>>>> db7ef5bf9f59442b0e200a90587e8fa5e0c6336a
             ),
             expectedDeviceId: '123',
             expectedLaunchArguments: <String>['--enable-dart-profiling'],
@@ -519,6 +523,87 @@ void main() {
         Xcode: () => xcode,
       });
 
+<<<<<<< HEAD
+=======
+      testUsingContext('updates Generated.xcconfig before and after launch', () async {
+        final Completer<void> debugStartedCompleter = Completer<void>();
+        final Completer<void> debugEndedCompleter = Completer<void>();
+        final IOSDevice iosDevice = setUpIOSDevice(
+          fileSystem: fileSystem,
+          processManager: FakeProcessManager.any(),
+          logger: logger,
+          artifacts: artifacts,
+          isCoreDevice: true,
+          coreDeviceControl: FakeIOSCoreDeviceControl(),
+          xcodeDebug: FakeXcodeDebug(
+            expectedProject: XcodeDebugProject(
+              scheme: 'Runner',
+              xcodeWorkspace: fileSystem.directory('/ios/Runner.xcworkspace'),
+              xcodeProject: fileSystem.directory('/ios/Runner.xcodeproj'),
+              hostAppProjectName: 'Runner',
+              expectedConfigurationBuildDir: '/build/ios/iphoneos',
+            ),
+            expectedDeviceId: '123',
+            expectedLaunchArguments: <String>['--enable-dart-profiling'],
+            debugStartedCompleter: debugStartedCompleter,
+            debugEndedCompleter: debugEndedCompleter,
+          ),
+        );
+
+        setUpIOSProject(fileSystem);
+        final FlutterProject flutterProject = FlutterProject.fromDirectory(fileSystem.currentDirectory);
+        final BuildableIOSApp buildableIOSApp = BuildableIOSApp(flutterProject.ios, 'flutter', 'My Super Awesome App.app');
+        fileSystem.directory('build/ios/Release-iphoneos/My Super Awesome App.app').createSync(recursive: true);
+
+        final FakeDeviceLogReader deviceLogReader = FakeDeviceLogReader();
+
+        iosDevice.portForwarder = const NoOpDevicePortForwarder();
+        iosDevice.setLogReader(buildableIOSApp, deviceLogReader);
+
+        // Start writing messages to the log reader.
+        Timer.run(() {
+          deviceLogReader.addLine('Foo');
+          deviceLogReader.addLine('The Dart VM service is listening on http://127.0.0.1:456');
+        });
+
+        final Future<LaunchResult> futureLaunchResult = iosDevice.startApp(
+          buildableIOSApp,
+          debuggingOptions: DebuggingOptions.enabled(const BuildInfo(
+            BuildMode.debug,
+            null,
+            buildName: '1.2.3',
+            buildNumber: '4',
+            treeShakeIcons: false,
+          )),
+          platformArgs: <String, Object>{},
+        );
+
+        await debugStartedCompleter.future;
+
+        // Validate CoreDevice build settings were used
+        final File config = fileSystem.directory('ios').childFile('Flutter/Generated.xcconfig');
+        expect(config.existsSync(), isTrue);
+
+        String contents = config.readAsStringSync();
+        expect(contents, contains('CONFIGURATION_BUILD_DIR=/build/ios/iphoneos'));
+
+        debugEndedCompleter.complete();
+
+        await futureLaunchResult;
+
+        // Validate CoreDevice build settings were removed after launch
+        contents = config.readAsStringSync();
+        expect(contents.contains('CONFIGURATION_BUILD_DIR'), isFalse);
+      }, overrides: <Type, Generator>{
+        ProcessManager: () => FakeProcessManager.any(),
+        FileSystem: () => fileSystem,
+        Logger: () => logger,
+        Platform: () => macPlatform,
+        XcodeProjectInterpreter: () => fakeXcodeProjectInterpreter,
+        Xcode: () => xcode,
+      });
+
+>>>>>>> db7ef5bf9f59442b0e200a90587e8fa5e0c6336a
       testUsingContext('fails when Xcode project is not found', () async {
         final IOSDevice iosDevice = setUpIOSDevice(
           fileSystem: fileSystem,
@@ -750,6 +835,11 @@ class FakeXcodeDebug extends Fake implements XcodeDebug {
     this.expectedProject,
     this.expectedDeviceId,
     this.expectedLaunchArguments,
+<<<<<<< HEAD
+=======
+    this.debugStartedCompleter,
+    this.debugEndedCompleter,
+>>>>>>> db7ef5bf9f59442b0e200a90587e8fa5e0c6336a
   });
 
   final bool debugSuccess;
@@ -757,6 +847,11 @@ class FakeXcodeDebug extends Fake implements XcodeDebug {
   final XcodeDebugProject? expectedProject;
   final String? expectedDeviceId;
   final List<String>? expectedLaunchArguments;
+<<<<<<< HEAD
+=======
+  final Completer<void>? debugStartedCompleter;
+  final Completer<void>? debugEndedCompleter;
+>>>>>>> db7ef5bf9f59442b0e200a90587e8fa5e0c6336a
 
   @override
   Future<bool> debugApp({
@@ -764,6 +859,10 @@ class FakeXcodeDebug extends Fake implements XcodeDebug {
     required String deviceId,
     required List<String> launchArguments,
   }) async {
+<<<<<<< HEAD
+=======
+    debugStartedCompleter?.complete();
+>>>>>>> db7ef5bf9f59442b0e200a90587e8fa5e0c6336a
     if (expectedProject != null) {
       expect(project.scheme, expectedProject!.scheme);
       expect(project.xcodeWorkspace.path, expectedProject!.xcodeWorkspace.path);
@@ -776,6 +875,10 @@ class FakeXcodeDebug extends Fake implements XcodeDebug {
     if (expectedLaunchArguments != null) {
       expect(expectedLaunchArguments, launchArguments);
     }
+<<<<<<< HEAD
+=======
+    await debugEndedCompleter?.future;
+>>>>>>> db7ef5bf9f59442b0e200a90587e8fa5e0c6336a
     return debugSuccess;
   }
 }
